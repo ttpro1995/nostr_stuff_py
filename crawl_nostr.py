@@ -1,3 +1,4 @@
+from pynostr.subscription import Subscription
 from pynostr.relay import Relay
 from pynostr.filters import FiltersList, Filters
 from pynostr.event import EventKind
@@ -90,5 +91,8 @@ class NostrCrawler:
 
 
 if __name__ == "__main__":
-    crawler = NostrCrawler()
-    crawler.crawl_loop()
+    # crawler = NostrCrawler()
+    # crawler.crawl_loop()
+    filter = FiltersList([Filters(kinds=[EventKind.TEXT_NOTE], limit=400)])
+    sub_mess = Subscription(uuid.uuid1().hex, filter).to_message()
+    print(sub_mess)
