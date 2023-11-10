@@ -33,7 +33,8 @@ r = Relay(
     message_pool,
     io_loop,
     policy,
-    timeout=2
+    timeout=2,
+    close_on_eose=False
 )
 # filters = FiltersList([Filters(kinds=[EventKind.TEXT_NOTE], limit=100)])
 filters = FiltersList([Filters(kinds=[EventKind.TEXT_NOTE])])
@@ -47,10 +48,10 @@ except gen.Return:
     pass
 io_loop.stop()
 
-# while message_pool.has_notices():
-#     print("notices")
-#     notice_msg = message_pool.get_notice()
-#     print(notice_msg.content)
+while message_pool.has_notices():
+    print("notices")
+    notice_msg = message_pool.get_notice()
+    print(notice_msg.content)
 
 flag = True
 while flag:

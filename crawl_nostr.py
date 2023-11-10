@@ -61,7 +61,7 @@ class NostrCrawler:
         io_loop = tornado.ioloop.IOLoop.current()
 
         # filters = FiltersList([Filters(kinds=[EventKind.TEXT_NOTE], limit=100)])
-        self.filters = FiltersList([Filters(kinds=[EventKind.TEXT_NOTE], limit=400)])
+        self.filters = FiltersList([Filters(kinds=[EventKind.TEXT_NOTE], limit=500)])
         self.subscription_id = uuid.uuid1().hex
 
     def crawl_loop(self):
@@ -72,6 +72,7 @@ class NostrCrawler:
             message_pool,
             io_loop,
             self.policy,
+            close_on_eose=False,
             timeout=2
         )
         r.add_subscription(self.subscription_id, self.filters)
@@ -82,17 +83,20 @@ class NostrCrawler:
         io_loop.stop()
 
         file_name = os.path.join(self.folder, get_datetime() + ".jsonl")
+        c = 0
         with open(file_name, "w") as f:
             while message_pool.has_events():
+                c+=1
                 event_msg = message_pool.get_event()
                 event_obj = event_msg.event
                 f.write(json.dumps(event_obj, cls=SimpleEventEncoder))
                 f.write("\n")
-
+        print("count ", c)
 
 if __name__ == "__main__":
-    # crawler = NostrCrawler()
-    # crawler.crawl_loop()
-    filter = FiltersList([Filters(kinds=[EventKind.TEXT_NOTE], limit=400)])
-    sub_mess = Subscription(uuid.uuid1().hex, filter).to_message()
-    print(sub_mess)
+    crawler = NostrCrawler()
+    crawler.crawl_loop()
+    # filter = FiltersList([Filters(kinds=[EventKind.TEXT_NOTE], limit=400)])
+    # filter = FiltersList([Filters(kinds=[EventKind.TEXT_NOTE], limit=600)])
+    # sub_mess = Subscription(uuid.uuid1().hex, filter).to_message()
+    # print(sub_mess)
